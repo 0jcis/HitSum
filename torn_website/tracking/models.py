@@ -8,11 +8,9 @@ class Faction(models.Model):
     async def delete_old_unused():
         seven_days_ago = timezone.now() - timedelta(days=7)
 
-        unused_faction_objects = Faction.objects.filter(last_updated__lt=seven_days_ago)
-        await unused_faction_objects.adelete()
+        await Faction.objects.filter(last_updated__lt=seven_days_ago).adelete()
 
-        ghost_attack_objects = Attack.objects.filter(factions__isnull=True)
-        await ghost_attack_objects.adelete()
+        await Attack.objects.filter(factions__isnull=True).adelete()
 
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=20)

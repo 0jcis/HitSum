@@ -136,21 +136,26 @@ section {
 .ul-home li {
     display:         flex;
     align-items:     baseline;
+    box-sizing:      border-box;
+    width:           100%;
     list-style-type: none;
     border-bottom:   .3em solid var(--yellow);
     gap:             .5em;
 }
 
-label {
-    font-size: .7rem;
-    width:     max-content;
-    height:    1em;
+.ul-home label {
+    font-size:   .7rem;
+    min-width:   max-content;
+    height:      1em;
+    white-space: nowrap;
 }
 
 .ul-home input {
     font-family:      ibm_plex_monomedium, sans-serif;
     font-size:        1rem;
-    flex-grow:        1;
+    flex:             1;
+    box-sizing:       border-box;
+    min-width:        0;
     height:           1em;
     text-align:       end;
     color:            var(--white);
@@ -226,15 +231,15 @@ thead {
     font-weight:      bold;
     padding:          .1em;
     cursor:           pointer;
-    color:            var(--black);
-    border:           0.2rem solid var(--yellow);
-    background-color: var(--yellow);
-}
-
-.button-1:hover {
     color:            var(--yellow);
     border:           0.2rem solid var(--yellow);
     background-color: var(--dark);
+}
+
+.button-1:hover {
+    color:            var(--black);
+    border:           0.2rem solid var(--yellow);
+    background-color: var(--yellow);
 }
 
 .active-link {
