@@ -448,9 +448,11 @@ class InstanceData:
 
         async def request_attack_data(session):
             # Delete stored old attacks if new war started.
-            attacks_before_war = filter(
-                lambda x: x.timestamp_started < self.faction.war_start,
-                self.faction.attacks.values(),
+            attacks_before_war = list(
+                filter(
+                    lambda x: x.timestamp_started < self.faction.war_start,
+                    self.faction.attacks.values(),
+                )
             )
 
             if attacks_before_war:
