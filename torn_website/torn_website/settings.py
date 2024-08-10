@@ -121,20 +121,20 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",  # Adjust the level as needed
+            "level": "INFO",
             "class": "logging.StreamHandler",
-            "stream": sys.stdout,  # Logs to stdout
+            "stream": sys.stdout,
             "formatter": "verbose",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG",  # Adjust the level as needed
+        "level": "INFO",
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "DEBUG",  # Adjust the level as needed
+            "level": "INFO",
             "propagate": True,
         },
     },

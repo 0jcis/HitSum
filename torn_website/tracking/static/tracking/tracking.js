@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const moneyElements = document.querySelectorAll('.money');
 
   moneyElements.forEach(function (element, index) {
-    console.log(`Element ${index}:`, element.textContent);
     formatMoney(element);
   });
 });
@@ -31,7 +30,6 @@ function formatMoney(element) {
   const value = parseFloat(element.textContent);
   if (!isNaN(value)) {
     const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    console.log("Formatted value:", formattedValue); // Debugging line
     element.textContent = formattedValue;
   }
 }
