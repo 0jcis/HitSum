@@ -28,7 +28,6 @@
 3. **Set Up Pay Rates**: Define pay rates for outside chain hits, inside hits, and penalties for being attacked.
 4. **Share the Link**: Share the unique URL with your faction members. They can use this link to check their earnings at any time during or after the war.
 5. **Automatic Calculation**: Hit$um tracks all attacks and losses from the start of the war until the end, even if you register mid-war.
-6. **Post-War Review**: After the war ends, members can review their final earnings and all calculations made during the war. The link remains active for 24 hours after the war concludes.
 
 ## War Attack Definitions
 
