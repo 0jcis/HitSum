@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -404,7 +404,7 @@ class InstanceData:
             self.faction.name = resp_basic_data["name"]
             self.faction.members = {
                 int(user_id): InstanceData.MemberData(
-                    user_id=user_id, name=data["name"]
+                    user_id=int(user_id), name=data["name"]
                 )
                 for user_id, data in resp_basic_data["members"].items()
             }
@@ -483,7 +483,7 @@ class InstanceData:
                 self.faction.attacks.update(
                     {
                         attack_id: InstanceData.AttackData(
-                            attack_id=attack_id,
+                            attack_id=int(attack_id),
                             timestamp_started=int(attack["timestamp_started"]),
                             timestamp_ended=int(attack["timestamp_ended"]),
                             attacker_id=(
@@ -726,7 +726,8 @@ async def tracking(request):
             return render(request, "tracking/link_removed.html")
 
         if instance_data.faction.last_updated < timezone.now() - timedelta(minutes=1):
-            await instance_data.request_data()
+            pass
+        await instance_data.request_data()
 
         faction = instance_data.faction
         chains = instance_data.faction.chains
@@ -776,7 +777,6 @@ async def tracking(request):
                 attack.timestamp_started = start_human, start_code
                 attack.timestamp_started = start_human, start_code
                 attack.timestamp_ended = end_human, end_code
-
         return render(
             request,
             "tracking/tracking.html",

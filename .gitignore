@@ -3,5 +3,6 @@ torn_website/.venv
 .database_env
 .webserver_env
 torn_website/test_db.sqlite3
+torn_website/test_db.sqlite3-journal
 migrations/
 __pycache__/
