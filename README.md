@@ -1,6 +1,6 @@
 # Hit$um
 
-**Hit$um** is an easy-to-use tool that automates your war pay calculations for Torn factions. With Faction API permissions, simply enter your API key, set up the pay rates for outside chain hits, inside hits, and penalties for getting attacked. Hit$um will handle the rest, generating a unique URL for your faction members to check their earnings during or after the war.
+**Hit$um** is an easy-to-use website that automates your war pay calculations for Torn factions. With Faction API permissions, simply enter your API key, set up the pay rates for outside chain hits, inside hits, and penalties for getting attacked. Hit$um will handle the rest, generating a unique URL for your faction members to check their earnings during or after the war.
 
 ## Table of Contents
 
