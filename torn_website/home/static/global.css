@@ -158,22 +158,6 @@ label {
     background-color: transparent;
 }
 
-input[type=submit] {
-    font-family:      ibm_plex_monomedium, sans-serif;
-    font-size:        1rem;
-    padding:          .1em;
-    cursor:           pointer;
-    color:            var(--black);
-    border: 0.2rem solid var(--yellow);
-    background-color: var(--yellow);
-}
-
-input[type=submit]:hover {
-    color:            var(--yellow);
-    border: 0.2rem solid var(--yellow);
-    background-color: var(--dark);
-}
-
 table {
     width: max-content;
 }
@@ -192,10 +176,10 @@ thead {
 }
 
 .in-2-columns {
-    display: grid;
-    grid-auto-flow: row;
-        grid-template-columns: auto auto;
-        gap: 1em;
+    display:               grid;
+    grid-auto-flow:        row;
+    grid-template-columns: auto auto;
+    gap:                   1em;
 }
 
 .money {
@@ -238,18 +222,19 @@ thead {
 }
 
 .button-1 {
-    font-size:        1.2em;
+    font-size:        1rem;
     font-weight:      bold;
-    margin:           0.2em;
+    padding:          .1em;
     cursor:           pointer;
-    color:            var(--white);
-    border:           none;
-    background-color: var(--dark);
+    color:            var(--black);
+    border:           0.2rem solid var(--yellow);
+    background-color: var(--yellow);
 }
 
 .button-1:hover {
-    color:            var(--black);
-    background-color: var(--yellow);
+    color:            var(--yellow);
+    border:           0.2rem solid var(--yellow);
+    background-color: var(--dark);
 }
 
 .active-link {
