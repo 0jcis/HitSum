@@ -6,14 +6,9 @@ from datetime import timedelta
 class Faction(models.Model):
     @staticmethod
     async def delete_old_unused():
-        one_day_ago = timezone.now() - timedelta(days=1)
+        seven_days_ago = timezone.now() - timedelta(days=7)
 
-        old_faction_objects = Faction.objects.filter(
-            war_end__lt=one_day_ago.timestamp()
-        )
-        await old_faction_objects.adelete()
-
-        unused_faction_objects = Faction.objects.filter(last_updated__lt=one_day_ago)
+        unused_faction_objects = Faction.objects.filter(last_updated__lt=seven_days_ago)
         await unused_faction_objects.adelete()
 
         ghost_attack_objects = Attack.objects.filter(factions__isnull=True)
