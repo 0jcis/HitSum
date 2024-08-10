@@ -1,0 +1,115 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="0jcis"/>
+    <meta
+      name="description"
+      content="A handy tool to calculate faction war pay in torn.com"/>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon"/>
+    <link rel="stylesheet" href="{% static 'global.css' %}">
+    <title>Hit$um - War Pay Calculated Automatically!</title>
+  </head>
+  <body>
+    <main>
+      <article>
+        <h1>Welcome to Hit$um!</h1>
+        <h2>The easy way to automate your war pay calculations!</h2>
+        <section>
+          If you have Faction API permission, just enter your API key, set up the pay rates for outside chain, inside hits and penalty for getting attacked, and Hit$um will handle the rest. It
+          generates a unique URL for you
+          to share
+          with faction members.
+          This link allows users to check their earnings at any time during or after the war.
+        </section>
+        <section>
+          It’s important to note that Hit$um only tracks and calculates from the start of war until the end, even if registered mid-war. After the war, users can use the link to review their final
+          earnings and see all the calculations made during the war. The link will remain active for at least 24 hours after the war is finished.
+        </section>
+      </article>
+      <article>
+        <h1>War attacks</h1>
+        <h2>What counts as a war attack</h2>
+        <section>A war attack is any attack made by a member of your faction against a member of an opposing faction.</section>
+      </article>
+      <article>
+        <h1>Outside Chain Attacks</h1>
+        <h2>What counts as an outside chain attack</h2>
+        <section>
+          An outside chain hit is an attack on a non-opponent faction member that occurs within a chain sequence leading to a bonus attack. However, there are specific conditions:
+          <ul>
+            <li>The attack must be part of a chain of attacks that leads up to a bonus attack.</li>
+            <li>If an outside chain hit occurs after a bonus attack and the chain does not continue to the next bonus attack, it does not count as an outside chain hit.</li>
+            <li>Attacks made on opposing faction members are considered war attacks, not outside chain hits.</li>
+          </ul>
+        </section>
+      </article>
+      <article>
+        <h1>Losses</h1>
+        <h2>What Counts as a Loss</h2>
+        <section>
+          If an opponent successfully hits a member of your faction, it is recorded as a loss for that member.
+        </section>
+      </article>
+      <article>
+        <h1>Score</h1>
+        <h2>How Outside Chain Attack Score is Calculated</h2>
+        <section>
+          The score for an outside chain attack is determined by dividing the total score gained from all bonuses in the chain by the number of attacks made in that chain sequence.
+        </section>
+      </article>
+      <article>
+        <h1>API Calls</h1>
+        <h2>How often new data is fetched</h2>
+        <section>Data is updated only when someone visits their faction's unique tracking page. It can't be refreshed more than once per minute. For example, if Anna checks her faction's war pay, new
+          data is fetched. If Tom visits the same page 30 seconds later, he sees the data that was fetched when Anna checked it, instead of triggering a new update.
+        </section>
+        <h2>How many API calls are made for each update</h2>
+        <section>When the server fetches new data, it usually takes fewer than 10 API calls. The first time data is fetched during a war, it might take more API calls depending on how many chains and
+          attacks have happened. After that, future updates require fewer API calls since only the new information is added to what's already there.
+        </section>
+      </article>
+      <article>
+        <h1>Unique Faction Links</h1>
+        <h2>Creating multiple links</h2>
+        <section>Each time you enter an API key, a new link is generated for tracking. Existing links with different API keys remain active. This means a faction can have multiple active tracking
+          pages, each with its own unique war pay settings if configured.
+        </section>
+      </article>
+      <article>
+        <h1>Privacy</h1>
+        <section>You can delete an API key at any time, which will deactivate the associated link. If you use the same API key to start new tracking, the old link will be removed, and a new one will
+          be created. Additionally, if no one views the data for a faction for more than 7 days, all data related to that faction is automatically deleted.
+        </section>
+      </article>
+      <article>
+        <h1>Track hits</h1>
+        <form method="post" action="/">
+          {% csrf_token %}
+          <ul class="ul-home">
+            <li>
+              <label for="api_key">API Key (Limited Access)</label>
+              <input id="api_key" name="api_key" type="password" required maxlength="16" minlength="16">
+            </li>
+            <li>
+              <label for="war_hit">$/war attack</label>
+              <input id="war_hit" name="war_hit" type="number" value="0">
+            </li>
+            <li>
+              <label for="outside_hit">$/outside chain attack</label>
+              <input id="outside_hit" name="outside_hit" type="number" value="0">
+            </li>
+            <li>
+              <label for="loss">-$/loss</label>
+              <input id="loss" name="loss" type="number" value="-0">
+            </li>
+          </ul>
+          <input type="submit" value="Submit">
+        </form>
+      </article>
+    </main>
+  </body>
+</html>

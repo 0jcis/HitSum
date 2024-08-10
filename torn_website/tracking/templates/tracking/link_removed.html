@@ -1,0 +1,24 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="0jcis"/>
+    <meta
+      name="description"
+      content="A handy tool to calculate faction war pay in torn.com"/>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon"/>
+    <link rel="stylesheet" href="{% static 'global.css' %}">
+    <script src="{% static 'tracking/tracking.js' %}"></script>
+
+    <title>Hit$um - War Pay Calculated Automatically!</title>
+  </head>
+
+  <body>
+    {% include 'nav.html' %}
+    <main>
+      <text id="error-page-text">This link has expired, sorry. :(</text>
+    </main>
+  </body>

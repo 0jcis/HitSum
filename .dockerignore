@@ -1,0 +1,10 @@
+torn_website/.venv
+torn_website/test_db.sqlite3
+torn_website/torn_website/settings_dev.py
+.git
+.gitignore
+Dockerfile.*
+.idea
+.webserver_env
+.dockerignore
+compose.yaml

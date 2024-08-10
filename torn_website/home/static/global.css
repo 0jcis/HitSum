@@ -1,0 +1,275 @@
+@font-face {
+    font-family: "ibm_plex_monomedium";
+    src:         url("/static/fonts/ibmplexmono-medium-webfont.woff2") format("woff2"),
+                 url("/static/fonts/ibmplexmono-medium-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style:  normal;
+}
+
+:root {
+    --white:  #c6c6c6;
+    --yellow: #d3ba41;
+    --dark:   #2e2e2e;
+    --black:  #232323;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    margin:             0;
+    -webkit-appearance: none;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+body {
+    font-family:      "ibm_plex_monomedium", serif;
+    margin:           0;
+    color:            var(--white);
+    background-color: var(--dark);
+}
+
+#main-nav a {
+    font-family:      ibm_plex_monomedium, sans-serif;
+    font-size:        2rem;
+    position:         fixed;
+    z-index:          1;
+    top:              0;
+    left:             0;
+    display:          flex;
+    padding:          0.2em;
+    cursor:           pointer;
+    transition:       width ease 0.1s, aspect-ratio ease 0.1s;
+    text-decoration:  none;
+    color:            var(--yellow);
+    border:           .3rem solid var(--yellow);
+    background-color: var(--black);
+}
+
+#main-nav a:hover {
+}
+
+
+#main-nav a text {
+    font-size:  0.5em;
+    margin:     0;
+    transition: font-size ease 0.1s;
+}
+
+#main-nav a:hover text {
+    font-size: 1em;
+}
+
+main {
+    display:         flex;
+    align-content:   space-evenly;
+    flex-wrap:       wrap;
+    justify-content: space-evenly;
+    margin:          1em;
+    padding:         5em;
+    gap:             3em;
+}
+
+article {
+    position:         relative;
+    display:          flex;
+    flex-direction:   column;
+    max-width:        80vw;
+    max-height:       80vh;
+    padding:          2em;
+    border:           .3em solid var(--yellow);
+    background-color: #232323;
+    box-shadow:       .5em .5em rgba(231, 208, 97, 0.26);
+    column-gap:       2em;
+    row-gap:          2em;
+}
+
+.style-1 {
+    margin-top:       1em;
+    padding:          0.5em;
+    color:            var(--white);
+    background-color: var(--dark);
+}
+
+
+h1 {
+    font-size:        2rem;
+    position:         absolute;
+    top:              -1.5em;
+    left:             1em;
+    width:            max-content;
+    padding:          .1em;
+    text-transform:   uppercase;
+    color:            var(--black);
+    background-color: var(--yellow);
+}
+
+h2 {
+    font-size:  1.4rem;
+    text-align: center;
+    color:      var(--yellow);
+}
+
+h3 {
+    color: var(--yellow);
+}
+
+section {
+    overflow:  scroll;
+    max-width: calc(100% - 2);
+    margin:    0;
+    border:    1px solid var(--border-color);
+}
+
+.ul-home {
+    padding: 0;
+}
+
+.ul-home li {
+    display:         flex;
+    align-items:     baseline;
+    list-style-type: none;
+    border-bottom:   .3em solid var(--yellow);
+    gap:             .5em;
+}
+
+label {
+    font-size: .7rem;
+    width:     max-content;
+    height:    1em;
+}
+
+.ul-home input {
+    font-family:      ibm_plex_monomedium, sans-serif;
+    font-size:        1rem;
+    flex-grow:        1;
+    height:           1em;
+    text-align:       end;
+    color:            var(--white);
+    border:           none;
+    background-color: transparent;
+}
+
+input[type=submit] {
+    font-family:      ibm_plex_monomedium, sans-serif;
+    font-size:        1rem;
+    padding:          .1em;
+    cursor:           pointer;
+    color:            var(--black);
+    border: 0.2rem solid var(--yellow);
+    background-color: var(--yellow);
+}
+
+input[type=submit]:hover {
+    color:            var(--yellow);
+    border: 0.2rem solid var(--yellow);
+    background-color: var(--dark);
+}
+
+table {
+    width: max-content;
+}
+
+thead {
+    color:            var(--black);
+    background-color: var(--yellow);
+}
+
+.col-yellow {
+    background-color: var(--yellow);
+}
+
+.col-grey {
+    background-color: var(--dark);
+}
+
+.in-2-columns {
+    display: grid;
+    grid-auto-flow: row;
+        grid-template-columns: auto auto;
+        gap: 1em;
+}
+
+.money {
+
+}
+
+.ul-tracking {
+    padding: 0;
+}
+
+.ul-tracking li {
+    margin:          0.2em;
+    list-style-type: none;
+}
+
+.war-attack {
+    background-color: rgba(51, 205, 0, 0.18);
+}
+
+.chain-attack {
+    background-color: rgba(0, 48, 205, 0.18);
+}
+
+.regular-attack {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.loss-attack {
+    background-color: rgba(205, 0, 5, 0.18);
+}
+
+.hide {
+    display: none;
+}
+
+#button-container {
+    display:        flex;
+    overflow:       scroll;
+    flex-direction: column;
+}
+
+.button-1 {
+    font-size:        1.2em;
+    font-weight:      bold;
+    margin:           0.2em;
+    cursor:           pointer;
+    color:            var(--white);
+    border:           none;
+    background-color: var(--dark);
+}
+
+.button-1:hover {
+    color:            var(--black);
+    background-color: var(--yellow);
+}
+
+.active-link {
+    color:            var(--black);
+    background-color: var(--yellow);
+}
+
+.horizontal-content {
+    display:    flex;
+    overflow:   hidden;
+    column-gap: 1em;
+}
+
+
+#error-page-text {
+    font-size:  5rem;
+    text-align: center;
+    color:      var(--yellow);
+}
+
+#error-page-logo {
+    width: 50%;
+}

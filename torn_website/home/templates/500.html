@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example Site</title>
+  </head>
+  <body></body>
+</html>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="0jcis"/>
+    <meta
+      name="description"
+      content="A handy tool to calculate faction war pay in torn.com"/>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon"/>
+    <link rel="stylesheet" href="{% static 'global.css' %}">
+
+    <title>Hit$um - War Pay Calculated Automatically!</title>
+  </head>
+
+  <body>
+    {% include 'nav.html' %}
+    <main>
+      <text id="error-page-text">Shit, something is not working properly,
+        can you please <a href="https://www.torn.com/profiles.php?XID=3154490" target="_blank">shoot me a message</a> and tell me what you did?
+      </text>
+    </main>
+  </body>

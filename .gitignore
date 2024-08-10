@@ -1,0 +1,7 @@
+torn_website/.venv
+.idea
+.database_env
+.webserver_env
+torn_website/test_db.sqlite3
+migrations/
+__pycache__/

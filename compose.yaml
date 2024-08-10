@@ -1,0 +1,40 @@
+name: torn
+
+services:
+  torn_webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.webserver
+    container_name: torn_webserver
+    volumes:
+      - static_files:/app/static
+    env_file:
+      - .webserver_env
+  proxy:
+    image: torn_proxy
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    container_name: proxy
+    ports:
+      - "192.168.1.3:443:443"
+      - "192.168.1.3:80:80"
+    volumes:
+      - static_files:/static:ro
+      - website_certs:/cert_files:ro
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - website_certs:/etc/letsencrypt
+      - letsencrypt_lib:/var/lib/letsencrypt
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do
+        certbot renew --non-interactive;
+        sleep 12h & wait $${!};
+      done"
+
+volumes:
+  static_files:
+  website_certs:
+  letsencrypt_lib:

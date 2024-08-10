@@ -1,0 +1,9 @@
+graceful_timeout = 30
+read_timeout = 300
+include_server_header = false
+bind = '0.0.0.0:80'
+keep_alive_timeout = 300
+server_names = ['torn.ojcis.com']
+worker_class = 'uvloop'
+workers = 4
+loglevel = 'debug'

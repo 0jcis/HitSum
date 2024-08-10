@@ -1,0 +1,4 @@
+aiohttp[speedups]
+Django
+hypercorn[h3]
+uvloop
