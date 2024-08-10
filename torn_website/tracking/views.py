@@ -389,7 +389,8 @@ class InstanceData:
 
     async def request_data(self):
         # To prevent from getting triggered to update multiple times at once.
-        await self.faction.update_to_db()
+        if self.faction.faction_id:
+            await self.faction.update_to_db()
 
         async def request_basic_data(session):
             params = {"key": self.api_key, "selections": "basic"}
