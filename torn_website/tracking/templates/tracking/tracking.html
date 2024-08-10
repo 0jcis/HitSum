@@ -23,11 +23,11 @@
         <h2>{{ faction.name }}</h2>
         <section class="in-2-columns">
           <p>Pay per war attack: </p>
-          <p><span class="money">{{ instance.pay_p_hit }}</span>$</p>
+          <p><span class="money">{{ instance.pay_p_hit }}</span></p>
           <p>Pay per outside chain attack: </p>
-          <p><span class="money">{{ instance.pay_p_outside_hit }}</span>$</p>
+          <p><span class="money">{{ instance.pay_p_outside_hit }}</span></p>
           <p>Penalty per loss: </p>
-          <p><span class="money">{{ instance.penalty_p_loss }}</span>$</p>
+          <p><span class="money">{{ instance.penalty_p_loss }}</span></p>
         </section>
         <section>
           <input type="button" value="Copy Url" onclick="navigator.clipboard.writeText(window.location.href);" class="button-1"/>
@@ -141,10 +141,10 @@
                   <tbody>
                   {% for member_id, member in members.items %}
                     <tr>
-                      <td><span class="money">{{ member.war_attack_pay }}</span>$</td>
-                      <td><span class="money">{{ member.chain_attack_pay }}</span>$</td>
-                      <td><span class="money">{{ member.loss_penalty }}</span>$</td>
-                      <td><span class="money">{{ member.final_pay }}</span>$</td>
+                      <td><span class="money">{{ member.war_attack_pay }}</span></td>
+                      <td><span class="money">{{ member.chain_attack_pay }}</span></td>
+                      <td><span class="money">{{ member.loss_penalty }}</span></td>
+                      <td><span class="money">{{ member.final_pay }}</span></td>
                     </tr>
                   {% endfor %}
                   </tbody>
