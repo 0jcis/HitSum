@@ -86,6 +86,7 @@ class InstanceData:
             if chain_object:
                 attack_object.chain = chain_object
             await attack_object.asave()
+            print(f"{faction_object} {member_object} {chain_object}")
             return attack_object, attack_object_created
 
     class MemberData:
@@ -438,7 +439,9 @@ class InstanceData:
                         int(war["war"]["start"]) for war in last_war_response.values()
                     )
 
-            self.faction.war_id = max(resp_war_data["rankedwars"].keys())
+            self.faction.war_id = str(
+                max(int(war_id) for war_id in last_war_response.keys())
+            )
             self.faction.war_start = resp_war_data["rankedwars"][self.faction.war_id][
                 "war"
             ]["start"]
@@ -448,16 +451,16 @@ class InstanceData:
 
         async def request_attack_data(session):
             # Delete stored old attacks if new war started.
-            attacks_before_war = list(
+            attacks_before_war = dict(
                 filter(
-                    lambda x: x.timestamp_started < self.faction.war_start,
-                    self.faction.attacks.values(),
+                    lambda x: x[1].timestamp_started < self.faction.war_start,
+                    self.faction.attacks.items(),
                 )
             )
-
-            if attacks_before_war:
-                faction_object = await Faction.objects.aget(id=self.faction.faction_id)
-                await faction_object.attacks.all().adelete()
+            for attack in attacks_before_war:
+                attack_object = await Attack.objects.aget(attack_id=attack)
+                await attack_object.adelete()
+                self.faction.attacks.pop(attack)
 
             attack_data = dict()
             last_attack_response = [None] * 100
@@ -519,6 +522,18 @@ class InstanceData:
                 )
 
         async def request_chain_data(session):
+            # Delete stored old chains if new war started.
+            chains_before_war = dict(
+                filter(
+                    lambda x: x[1].start < self.faction.war_start,
+                    self.faction.chains.items(),
+                )
+            )
+            for chain in chains_before_war:
+                chain_object = await Chain.objects.aget(chain_id=chain)
+                await chain_object.adelete()
+                self.faction.chains.pop(chain)
+
             chain_data = dict()
             last_chain_response = [None] * 100
             params = {
@@ -565,6 +580,9 @@ class InstanceData:
                 )
 
         def assign_attacks():
+            for member in self.faction.members.values():
+                member.attacks = dict()
+
             for attack_id, attack in self.faction.attacks.items():
                 if attack.attacker_id in self.faction.members:
                     self.faction.members[attack.attacker_id].attacks.update(
@@ -742,7 +760,8 @@ async def tracking(request):
             return render(request, "tracking/link_removed.html")
 
         if instance_data.faction.last_updated < timezone.now() - timedelta(minutes=1):
-            await instance_data.request_data()
+            pass
+        await instance_data.request_data()
 
         faction = instance_data.faction
         chains = instance_data.faction.chains
