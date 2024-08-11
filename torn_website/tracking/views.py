@@ -760,8 +760,7 @@ async def tracking(request):
             return render(request, "tracking/link_removed.html")
 
         if instance_data.faction.last_updated < timezone.now() - timedelta(minutes=1):
-            pass
-        await instance_data.request_data()
+            await instance_data.request_data()
 
         faction = instance_data.faction
         chains = instance_data.faction.chains
