@@ -794,7 +794,7 @@ async def tracking(request):
             for attack_id, attack in member.attacks.items():
                 # noinspection PyTypeChecker
                 start_human = datetime.fromtimestamp(attack.timestamp_started).strftime(
-                    "%d/%V/%y %I:%M%p"
+                    "%d/%m/%y %I:%M%p"
                 )
                 # noinspection PyTypeChecker
                 start_code = attack.timestamp_started = datetime.fromtimestamp(
@@ -803,7 +803,7 @@ async def tracking(request):
 
                 # noinspection PyTypeChecker
                 end_human = datetime.fromtimestamp(attack.timestamp_ended).strftime(
-                    "%d/%V/%y %I:%M%p"
+                    "%d/%m/%y %I:%M%p"
                 )
                 # noinspection PyTypeChecker
                 end_code = datetime.fromtimestamp(attack.timestamp_ended).isoformat()
