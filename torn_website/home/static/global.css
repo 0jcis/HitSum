@@ -129,28 +129,14 @@ section {
     border:    1px solid var(--border-color);
 }
 
-.ul-home {
-    padding: 0;
-}
-
-.ul-home li {
-    display:         flex;
-    align-items:     baseline;
-    box-sizing:      border-box;
-    width:           100%;
-    list-style-type: none;
-    border-bottom:   .3em solid var(--yellow);
-    gap:             .5em;
-}
-
-.ul-home label {
+.label-home {
     font-size:   .7rem;
     min-width:   max-content;
     height:      1em;
     white-space: nowrap;
 }
 
-.ul-home input {
+.input-home {
     font-family:      ibm_plex_monomedium, sans-serif;
     font-size:        1rem;
     flex:             1;
@@ -160,6 +146,7 @@ section {
     text-align:       end;
     color:            var(--white);
     border:           none;
+    border-bottom:    solid 0.1em var(--yellow);
     background-color: transparent;
 }
 
@@ -176,19 +163,43 @@ thead {
     background-color: var(--yellow);
 }
 
-.col-grey {
+.row-grey {
     background-color: var(--dark);
 }
+
+.table-sortable th {
+    cursor: pointer;
+}
+
+.table-sortable .th-sort-asc::after {
+    content: "\25b4";
+}
+
+.table-sortable .th-sort-desc::after {
+    content: "\25be";
+}
+
+.table-sortable .th-sort-asc::after,
+.table-sortable .th-sort-desc::after {
+    margin-left: 0.1em;
+}
+
+.table-sortable .th-sort-asc,
+.table-sortable .th-sort-desc {
+    color:      var(--yellow);
+    background: var(--black);
+    border-top: 0.2rem solid var(--yellow);
+}
+
 
 .in-2-columns {
     display:               grid;
     grid-auto-flow:        row;
     grid-template-columns: auto auto;
     gap:                   1em;
-}
-
-.money {
-
+    justify-content: center;
+    align-content: center;
+    align-items: center;
 }
 
 .ul-tracking {
@@ -202,6 +213,10 @@ thead {
 
 .war-attack {
     background-color: rgba(51, 205, 0, 0.18);
+}
+
+.assist {
+    background-color: rgba(228, 243, 32, 0.18);
 }
 
 .chain-attack {
@@ -233,7 +248,7 @@ thead {
     cursor:           pointer;
     color:            var(--yellow);
     border:           0.2rem solid var(--yellow);
-    background-color: var(--dark);
+    background-color: var(--black);
 }
 
 .button-1:hover {

@@ -17,7 +17,6 @@ class Faction(models.Model):
     war_id = models.IntegerField()
     war_start = models.IntegerField(blank=True, null=True)
     war_end = models.IntegerField(blank=True, null=True)
-    last_known_attack = models.IntegerField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now=True)
 
 
@@ -41,16 +40,9 @@ class Member(models.Model):
         Faction, on_delete=models.CASCADE, related_name="members"
     )
     war_hits = models.IntegerField(default=0)
+    assists = models.IntegerField(default=0)
     outside_chain_hits = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
-    score_war_attacks = models.FloatField(default=0)
-    score_chain_attacks = models.FloatField(default=0)
-    score_losses = models.FloatField(default=0)
-    score_sum = models.FloatField(default=0)
-    war_attack_pay = models.IntegerField(default=0)
-    chain_attack_pay = models.IntegerField(default=0)
-    loss_penalty = models.IntegerField(default=0)
-    final_pay = models.IntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
 
 
@@ -80,9 +72,12 @@ class Attack(models.Model):
     )
     respect = models.FloatField()
     chain_length = models.IntegerField()
+    group = models.BooleanField(default=False)
     ranked_war = models.BooleanField()
     attacker_war_result = models.CharField(
-        max_length=15, choices={"War": "War", "Chain": "Chain", "": ""}, default=""
+        max_length=15,
+        choices={"War": "War", "Chain": "Chain", "Assist": "Assist", "": ""},
+        default="",
     )
     defender_war_result = models.CharField(
         max_length=15, choices={"Loss": "Loss", "": ""}, default=""
@@ -95,11 +90,8 @@ class Attack(models.Model):
 
 
 class Instance(models.Model):
-    api_key = models.CharField(primary_key=True, max_length=64)
+    api_key = models.CharField(primary_key=True, max_length=16)
     link_id = models.URLField(max_length=42, unique=True)
-    pay_per_hit = models.IntegerField(default=0)
-    pay_per_outside_hit = models.IntegerField(default=0)
-    penalty_per_loss = models.IntegerField(default=0)
     faction = models.ForeignKey(
         Faction, on_delete=models.CASCADE, related_name="instances", null=True
     )

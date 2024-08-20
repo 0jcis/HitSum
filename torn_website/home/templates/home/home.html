@@ -19,24 +19,8 @@
         <h1>Track hits</h1>
         <form method="post" action="/">
           {% csrf_token %}
-          <ul class="ul-home">
-            <li>
-              <label for="api_key">API Key (Limited Access)</label>
-              <input id="api_key" name="api_key" type="password" required maxlength="16" minlength="16">
-            </li>
-            <li>
-              <label for="war_hit">$/war attack</label>
-              <input id="war_hit" name="war_hit" type="number" value="0">
-            </li>
-            <li>
-              <label for="outside_hit">$/outside chain attack</label>
-              <input id="outside_hit" name="outside_hit" type="number" value="0">
-            </li>
-            <li>
-              <label for="loss">-$/loss</label>
-              <input id="loss" name="loss" type="number" value="-0">
-            </li>
-          </ul>
+          <label class="label-home" for="api_key">API Key (Limited Access)</label>
+          <input class="input-home" id="api_key" name="api_key" type="password" required maxlength="16" minlength="16">
           <input class="button-1" type="submit" value="Submit">
         </form>
       </article>

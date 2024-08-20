@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from time import sleep
 
 from aiohttp import ClientSession
 from asgiref.sync import sync_to_async
@@ -24,6 +25,7 @@ class InstanceData:
             result="",
             respect=0.0,
             chain_length=0,
+            group=False,
             ranked_war=None,
             attacker_war_result="",
             defender_war_result="",
@@ -38,6 +40,7 @@ class InstanceData:
             self.result = result
             self.respect = respect
             self.chain_length = chain_length
+            self.group = group
             self.ranked_war = ranked_war
             self.attacker_war_result = attacker_war_result
             self.defender_war_result = defender_war_result
@@ -53,6 +56,7 @@ class InstanceData:
             self.result = attack_object.result
             self.respect = attack_object.respect
             self.chain_length = attack_object.chain_length
+            self.group = attack_object.group
             self.ranked_war = attack_object.ranked_war
             self.attacker_war_result = attack_object.attacker_war_result
             self.defender_war_result = attack_object.defender_war_result
@@ -73,6 +77,7 @@ class InstanceData:
                         "result": self.result,
                         "respect": self.respect,
                         "chain_length": self.chain_length,
+                        "group": self.group,
                         "ranked_war": self.ranked_war,
                         "attacker_war_result": self.attacker_war_result,
                         "defender_war_result": self.defender_war_result,
@@ -86,7 +91,6 @@ class InstanceData:
             if chain_object:
                 attack_object.chain = chain_object
             await attack_object.asave()
-            print(f"{faction_object} {member_object} {chain_object}")
             return attack_object, attack_object_created
 
     class MemberData:
@@ -95,28 +99,16 @@ class InstanceData:
             user_id=None,
             name="",
             war_hits=0,
+            assists=0,
             outside_chain_hits=0,
             losses=0,
-            score_war_attacks=0.0,
-            score_chain_attacks=0.0,
-            score_losses=0.0,
-            war_attack_pay=0,
-            chain_attack_pay=0,
-            loss_penalty=0,
         ):
             self.user_id = user_id
             self.name = name
             self.war_hits = war_hits
+            self.assists = assists
             self.outside_chain_hits = outside_chain_hits
             self.losses = losses
-            self.score_war_attacks = score_war_attacks
-            self.score_chain_attacks = score_chain_attacks
-            self.score_losses = score_losses
-            self.score_sum = score_war_attacks + score_chain_attacks + score_losses
-            self.war_attack_pay = war_attack_pay
-            self.chain_attack_pay = chain_attack_pay
-            self.loss_penalty = loss_penalty
-            self.final_pay = war_attack_pay + chain_attack_pay + loss_penalty
             self.attacks = dict()
 
         async def retrieve_from_db(self, member_object):
@@ -132,16 +124,9 @@ class InstanceData:
             self.user_id = member_object.id
             self.name = member_object.name
             self.war_hits = member_object.war_hits
+            self.assists = member_object.assists
             self.outside_chain_hits = member_object.outside_chain_hits
             self.losses = member_object.losses
-            self.score_war_attacks = member_object.score_war_attacks
-            self.score_chain_attacks = member_object.score_chain_attacks
-            self.score_losses = member_object.score_losses
-            self.score_sum = member_object.score_sum
-            self.war_attack_pay = member_object.war_attack_pay
-            self.chain_attack_pay = member_object.chain_attack_pay
-            self.loss_penalty = member_object.loss_penalty
-            self.final_pay = member_object.final_pay
             self.attacks = attacks
 
         async def update_to_db(self, faction_object):
@@ -152,16 +137,9 @@ class InstanceData:
                         "name": self.name,
                         "faction": faction_object,
                         "war_hits": self.war_hits,
+                        "assists": self.assists,
                         "outside_chain_hits": self.outside_chain_hits,
                         "losses": self.losses,
-                        "score_war_attacks": self.score_war_attacks,
-                        "score_chain_attacks": self.score_chain_attacks,
-                        "score_losses": self.score_losses,
-                        "score_sum": self.score_sum,
-                        "war_attack_pay": self.war_attack_pay,
-                        "chain_attack_pay": self.chain_attack_pay,
-                        "loss_penalty": self.loss_penalty,
-                        "final_pay": self.final_pay,
                     },
                 )
             )
@@ -259,13 +237,7 @@ class InstanceData:
 
     class FactionData:
         def __init__(
-            self,
-            faction_id=None,
-            name=None,
-            war_id=None,
-            war_start=None,
-            war_end=None,
-            last_known_attack=None,
+            self, faction_id=None, name=None, war_id=None, war_start=None, war_end=None
         ):
             self.faction_id = faction_id
             self.name = name
@@ -275,7 +247,6 @@ class InstanceData:
             self.members = dict()
             self.attacks = dict()
             self.chains = dict()
-            self.last_known_attack = last_known_attack
             self.last_updated = None
 
         async def retrieve_from_db(self, faction_object):
@@ -314,7 +285,6 @@ class InstanceData:
             self.chains = chains
             self.members = members
             self.attacks = attacks
-            self.last_known_attack = faction_object.last_known_attack
             self.last_updated = faction_object.last_updated
 
         async def update_to_db(self):
@@ -326,27 +296,16 @@ class InstanceData:
                         "war_id": self.war_id,
                         "war_start": self.war_start,
                         "war_end": self.war_end,
-                        "last_known_attack": self.last_known_attack,
                     },
                 )
             )
             self.last_updated = faction_object.last_updated
             return faction_object, faction_object_created
 
-    def __init__(
-        self,
-        api_key=None,
-        pay_p_hit=0,
-        pay_p_outside_hit=0,
-        penalty_p_loss=0,
-        link_id=None,
-    ):
+    def __init__(self, api_key=None, link_id=None, faction=FactionData()):
         self.api_key = api_key
-        self.pay_p_hit = int(pay_p_hit)
-        self.pay_p_outside_hit = int(pay_p_outside_hit)
-        self.penalty_p_loss = int(penalty_p_loss)
         self.link_id = link_id
-        self.faction = self.FactionData()
+        self.faction = faction
 
     async def retrieve_from_db(self):
         instance_object = await Instance.objects.aget(link_id=self.link_id)
@@ -354,9 +313,6 @@ class InstanceData:
         faction_object = await sync_to_async(lambda: instance_object.faction)()
 
         self.api_key = instance_object.api_key
-        self.pay_p_hit = instance_object.pay_per_hit
-        self.pay_p_outside_hit = instance_object.pay_per_outside_hit
-        self.penalty_p_loss = instance_object.penalty_per_loss
         self.faction = self.FactionData()
 
         await self.faction.retrieve_from_db(faction_object)
@@ -366,9 +322,6 @@ class InstanceData:
             await Instance.objects.aupdate_or_create(
                 api_key=self.api_key,
                 defaults={
-                    "pay_per_hit": self.pay_p_hit,
-                    "pay_per_outside_hit": self.pay_p_outside_hit,
-                    "penalty_per_loss": self.penalty_p_loss,
                     "link_id": self.link_id,
                 },
             )
@@ -377,7 +330,7 @@ class InstanceData:
 
         if instance_object_created or not faction_object:
             try:
-                await self.request_data()
+                await self.request_data(save_now=True)
             except PermissionError:
                 await instance_object.adelete()
                 raise PermissionError(
@@ -388,22 +341,31 @@ class InstanceData:
             self.faction = self.FactionData()
             await self.faction.retrieve_from_db(faction_object)
 
-    async def request_data(self):
+    async def request_data(self, save_now=False):
         # To prevent from getting triggered to update multiple times at once.
         if self.faction.faction_id:
             await self.faction.update_to_db()
 
         async def request_basic_data(session):
             params = {"key": self.api_key, "selections": "basic"}
+            retries = 0
+            response_successful = False
 
-            async with session.get("/faction", params=params) as resp:
-                resp.raise_for_status()
-                resp_basic_data = await resp.json()
-
-            if "error" in resp_basic_data:
-                raise PermissionError(
-                    "API key invalid, no permissions or torn API down."
-                )
+            while not response_successful:
+                async with session.get("/faction", params=params) as resp:
+                    resp.raise_for_status()
+                    resp_basic_data = await resp.json()
+                if "error" in resp_basic_data:
+                    if resp_basic_data["error"]["code"] == 5:
+                        sleep(60 - datetime.now().second)
+                        retries += 1
+                        raise RuntimeError("API overloaded.") if retries == 10 else None
+                    else:
+                        raise PermissionError(
+                            "API key invalid, no permissions or torn API down."
+                        )
+                else:
+                    response_successful = True
 
             self.faction.faction_id = resp_basic_data["ID"]
             self.faction.name = resp_basic_data["name"]
@@ -415,32 +377,29 @@ class InstanceData:
             }
 
         async def request_war_data(session):
-            war_data = dict()
-            last_war_response = [None] * 100
-            params = {
-                "key": self.api_key,
-                "selections": "rankedwars",
-                "from": self.faction.war_start if self.faction.war_start else 0,
-                "to": 0,
-            }
+            response_successful = False
+            retries = 0
+            params = {"key": self.api_key, "selections": "rankedwars"}
 
-            while not len(last_war_response) < 99:
+            while not response_successful:
                 async with session.get("/faction", params=params) as resp:
                     resp.raise_for_status()
                     resp_war_data = await resp.json()
 
-                    if "error" in resp_war_data:
+                if "error" in resp_war_data:
+                    if resp_war_data["error"]["code"] == 5:
+                        sleep(60 - datetime.now().second)
+                        retries += 1
+                        raise RuntimeError("API overloaded.") if retries == 10 else None
+                    else:
                         raise PermissionError(
                             "API key invalid, no permissions or torn API down."
                         )
-                    last_war_response = resp_war_data["rankedwars"]
-                    war_data.update(last_war_response)
-                    params["from"] = max(
-                        int(war["war"]["start"]) for war in last_war_response.values()
-                    )
+                else:
+                    response_successful = True
 
             self.faction.war_id = str(
-                max(int(war_id) for war_id in last_war_response.keys())
+                max(int(war_id) for war_id in resp_war_data["rankedwars"].keys())
             )
             self.faction.war_start = resp_war_data["rankedwars"][self.faction.war_id][
                 "war"
@@ -463,7 +422,9 @@ class InstanceData:
                 self.faction.attacks.pop(attack)
 
             attack_data = dict()
-            last_attack_response = [None] * 100
+            last_attack_response = None
+            last_response_len = 100
+            retries = 0
             params = {
                 "key": self.api_key,
                 "selections": "attacks",
@@ -477,16 +438,25 @@ class InstanceData:
                 ),
                 "to": self.faction.war_end,
             }
-            while not len(last_attack_response) < 99:
+            while not last_response_len == 1:
                 async with session.get("/faction", params=params) as resp:
                     resp.raise_for_status()
                     resp_attack_data = await resp.json()
 
-                    if "error" in resp_attack_data:
+                if "error" in resp_attack_data:
+                    if resp_attack_data["error"]["code"] == 5:
+                        sleep(60 - datetime.now().second)
+                        retries += 1
+                        raise RuntimeError("API overloaded.") if retries == 10 else None
+                    else:
                         raise PermissionError(
                             "API key invalid, no permissions or torn API down."
                         )
-
+                else:
+                    if last_attack_response == resp_attack_data["attacks"]:
+                        last_response_len = 1
+                    else:
+                        last_response_len = len(resp_attack_data["attacks"])
                     last_attack_response = resp_attack_data["attacks"]
 
                     if not last_attack_response:
@@ -516,6 +486,11 @@ class InstanceData:
                             result=attack["result"],
                             respect=attack["respect"],
                             chain_length=attack["chain"],
+                            group=(
+                                True
+                                if attack["modifiers"]["group_attack"] > 1
+                                else False
+                            ),
                             ranked_war=bool(attack["ranked_war"]),
                         )
                     }
@@ -535,7 +510,9 @@ class InstanceData:
                 self.faction.chains.pop(chain)
 
             chain_data = dict()
-            last_chain_response = [None] * 100
+            retries = 0
+            last_chain_response = None
+            last_response_len = 100
             params = {
                 "key": self.api_key,
                 "selections": "chains",
@@ -547,17 +524,26 @@ class InstanceData:
                 "to": self.faction.war_end,
             }
 
-            while not len(last_chain_response) < 99:
+            while not last_response_len == 1:
                 async with session.get("/faction", params=params) as resp:
                     resp.raise_for_status()
                     resp_chain_data = await resp.json()
 
-                    if "error" in resp_chain_data:
-                        raise PermissionError(
-                            "API key invalid, no permissions or torn API down."
-                        )
-
+                if "error" in resp_chain_data:
+                    if resp_chain_data["error"]["code"] == 5:
+                        sleep(60 - datetime.now().second)
+                        retries += 1
+                        raise RuntimeError("API overloaded.") if retries == 10 else None
+                    raise PermissionError(
+                        "API key invalid, no permissions or torn API down."
+                    )
+                else:
+                    if last_chain_response == resp_chain_data["chains"]:
+                        last_response_len = 1
+                    else:
+                        last_response_len = len(resp_chain_data["chains"])
                     last_chain_response = resp_chain_data["chains"]
+
                     if not last_chain_response:
                         break
 
@@ -596,8 +582,6 @@ class InstanceData:
         def count_losses():
             for member in self.faction.members.values():
                 member.losses = 0
-                member.score_losses = 0.0
-                member.loss_penalty = 0
 
             for attack in self.faction.attacks.values():
                 if all(
@@ -607,30 +591,13 @@ class InstanceData:
                         attack.result in ("Attacked", "Hospitalized", "Mugged"),
                     )
                 ):
-                    member = self.faction.members[attack.defender_id]
-                    member.losses += 1
-                    member.score_losses -= attack.respect
-                    member.loss_penalty += self.penalty_p_loss
+                    self.faction.members[attack.defender_id].losses += 1
 
                     attack.defender_war_result = "Loss"
-
-            for member in self.faction.members.values():
-                member.score_sum = (
-                    member.score_war_attacks
-                    + member.score_chain_attacks
-                    + member.score_losses
-                )
-                member.final_pay = (
-                    member.war_attack_pay
-                    + member.chain_attack_pay
-                    + member.loss_penalty
-                )
 
         def count_chain_attacks():
             for member in self.faction.members.values():
                 member.outside_chain_hits = 0
-                member.score_chain_attacks = 0.0
-                member.chain_attack_pay = 0
 
             for chain in self.faction.chains.values():
                 for attack_id, attack in self.faction.attacks.items():
@@ -648,31 +615,41 @@ class InstanceData:
                     if all((during_chain, is_outside, is_chain, is_member)):
                         member = self.faction.members[attack.attacker_id]
                         member.outside_chain_hits += 1
-                        member.score_chain_attacks += (
-                            chain.all_bonus_respect / chain.last_bonus
-                        )
-                        member.chain_attack_pay += self.pay_p_outside_hit
 
                         attack.attacker_war_result = "Chain"
                         chain.attacks.update({attack_id: attack})
 
+        def count_assists():
             for member in self.faction.members.values():
-                member.score_sum = (
-                    member.score_war_attacks
-                    + member.score_chain_attacks
-                    + member.score_losses
-                )
-                member.final_pay = (
-                    member.war_attack_pay
-                    + member.chain_attack_pay
-                    + member.loss_penalty
-                )
+                member.assists = 0
+
+            for attack in self.faction.attacks.values():
+                if (
+                    attack.attacker_id in self.faction.members.keys()
+                    and attack.result == "Assist"
+                ):
+                    attack_start = datetime.fromtimestamp(attack.timestamp_started)
+                    group_attack_from = attack_start - timedelta(minutes=5)
+                    group_attack_from = int(group_attack_from.timestamp())
+                    group_attack_to = attack_start + timedelta(minutes=5)
+                    group_attack_to = int(group_attack_to.timestamp())
+                    for att in self.faction.attacks.values():
+                        in_5_min = att.timestamp_started in range(
+                            group_attack_from, group_attack_to
+                        )
+                        same_defender = att.defender_id == attack.defender_id
+
+                        if all((in_5_min, att.group, same_defender)):
+                            member = self.faction.members[attack.attacker_id]
+                            member.assists += 1
+
+                            attack.attacker_war_result = "Assist"
+
+                            break
 
         def count_war_attacks():
             for member in self.faction.members.values():
                 member.war_hits = 0
-                member.score_war_attacks = 0.0
-                member.war_attack_pay = 0
 
             for attack in self.faction.attacks.values():
                 if all(
@@ -684,22 +661,8 @@ class InstanceData:
                 ):
                     member = self.faction.members[attack.attacker_id]
                     member.war_hits += 1
-                    member.score_war_attacks += attack.respect
-                    member.war_attack_pay += self.pay_p_hit
 
                     attack.attacker_war_result = "War"
-
-            for member in self.faction.members.values():
-                member.score_sum = (
-                    member.score_war_attacks
-                    + member.score_chain_attacks
-                    + member.score_losses
-                )
-                member.final_pay = (
-                    member.war_attack_pay
-                    + member.chain_attack_pay
-                    + member.loss_penalty
-                )
 
         async def update_to_db():
             faction_object, faction_object_created = await self.faction.update_to_db()
@@ -725,9 +688,6 @@ class InstanceData:
             await Instance.objects.aupdate_or_create(
                 api_key=self.api_key,
                 defaults={
-                    "pay_per_hit": self.pay_p_hit,
-                    "pay_per_outside_hit": self.pay_p_outside_hit,
-                    "penalty_per_loss": self.penalty_p_loss,
                     "link_id": self.link_id,
                     "faction": faction_object,
                 },
@@ -741,10 +701,17 @@ class InstanceData:
 
         assign_attacks()
         count_war_attacks()
+        count_assists()
         count_chain_attacks()
         count_losses()
 
-        await update_to_db()
+        from .tasks import update_to_db_in_background
+
+        (
+            await update_to_db()
+            if save_now
+            else await sync_to_async(update_to_db_in_background)(self)
+        )
 
 
 async def tracking(request):
@@ -785,11 +752,6 @@ async def tracking(request):
             chain.end = end_human, end_code
 
         for member in members.values():
-            member.score_chain_attacks = round(member.score_chain_attacks, 2)
-            member.score_war_attacks = round(member.score_war_attacks, 2)
-            member.score_losses = round(member.score_losses, 2)
-            member.score_sum = round(member.score_sum, 2)
-
             for attack_id, attack in member.attacks.items():
                 # noinspection PyTypeChecker
                 start_human = datetime.fromtimestamp(attack.timestamp_started).strftime(

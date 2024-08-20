@@ -19,33 +19,17 @@ async def home(request):
         return render(request, "home/home.html")
     elif request.method == "POST":
         api_key = request.POST.get("api_key", None)
-        pay_p_hit = request.POST.get("war_hit", None)
-        pay_p_outside_hit = request.POST.get("outside_hit", None)
-        penalty_p_loss = request.POST.get("loss", None)
 
-        if (
-            not all((api_key, pay_p_hit, pay_p_outside_hit, penalty_p_loss))
-            or len(api_key) != 16
-        ):
-            return HttpResponseBadRequest(
-                "Missing or invalid required parameters. (api key, pay per war hit, pay per outside hit, pay per loss)"
-            )
-        for value in pay_p_hit, pay_p_outside_hit, penalty_p_loss:
-            try:
-                int(value)
-            except ValueError:
-                return HttpResponseBadRequest(
-                    "Missing or invalid required parameters. (api key, pay per war hit, pay per outside hit, pay per loss)"
-                )
+        if len(api_key) != 16:
+            return HttpResponseBadRequest("Missing or invalid API key.")
 
-        instance_data = InstanceData(
-            api_key, pay_p_hit, pay_p_outside_hit, penalty_p_loss, random_id()
-        )
+        instance_data = InstanceData(api_key, random_id())
         try:
             await instance_data.update_or_create()
         except PermissionError:
             return render(request, status=400, template_name="400.html")
         if instance_data.faction.last_updated < timezone.now() - timedelta(minutes=1):
+            print("This shouldnt run")
             await instance_data.request_data()
             return HttpResponseRedirect(f"/tracking/?id={instance_data.link_id}")
         else:

@@ -19,138 +19,57 @@
     {% include 'nav.html' %}
     <main>
       <article>
-        <h1>Pay Rates</h1>
+        <h1>Control Panel</h1>
         <h2>{{ faction.name }}</h2>
         <section class="in-2-columns">
-          <p>Pay per war attack: </p>
-          <p><span class="money">{{ instance.pay_p_hit }}</span></p>
-          <p>Pay per outside chain attack: </p>
-          <p><span class="money">{{ instance.pay_p_outside_hit }}</span></p>
-          <p>Penalty per loss: </p>
-          <p><span class="money">{{ instance.penalty_p_loss }}</span></p>
-        </section>
-        <section>
-          <input type="button" value="Copy Url" onclick="navigator.clipboard.writeText(window.location.href);" class="button-1"/>
+          <label for="pay-per-war-attack">Pay per war attack</label>
+          <input class="input-home money" type="text" id="pay-per-war-attack" value="0"/>
+          <label for="pay-per-assist">Pay per assist</label>
+          <input class="input-home money" type="text" id="pay-per-assist" value="0"/>
+          <label for="pay-per-chain-attack">Pay per chain attack</label>
+          <input class="input-home money" type="text" id="pay-per-chain-attack" value="0"/>
+          <label for="penalty-per-loss">Penalty per loss</label>
+          <input class="input-home money" type="text" id="penalty-per-loss" value="-0"/>
+          <label><input type="button" value="Copy URL with Pay Rates" onclick="copyUrlWithParams()" class="button-1" id="copy-url-button"/></label>
+          <p>Total war payout: <span class="money" id="total-payout"></span></p>
         </section>
       </article>
       <article>
         <h1>Summary</h1>
         <h2>
-          War attack count, score and pay for all members summarized
+          Attack count and pay for all members summarized
         </h2>
         <section>
-          <table>
+          <table class="table-sortable">
             <thead>
             <tr>
-              <th></th>
-              <th>Attacks</th>
-              <th>Score</th>
-              <th>Pay</th>
+              <th>Member</th>
+              <th>War Attacks</th>
+              <th>Assists</th>
+              <th>Chain Attacks</th>
+              <th>Losses</th>
+              <th>War Attack Pay</th>
+              <th>Assist Pay</th>
+              <th>Chain Attack Pay</th>
+              <th>Penalty For Losses</th>
+              <th>Final Pay</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <th>
-                <table>
-                  <colgroup>
-                    <col class="col-grey"/>
-                  </colgroup>
-                  <thead>
-                  <tr>
-                    <th>Member</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for member_id, member in members.items %}
-                    <tr>
-                      <td>{{ member.name }}</td>
-                    </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
-              </th>
-              <th>
-                <table>
-                  <colgroup>
-                    <col/>
-                    <col class="col-grey"/>
-                    <col/>
-                  </colgroup>
-                  <thead>
-                  <tr>
-                    <th>War Attacks</th>
-                    <th>Chain Attacks</th>
-                    <th>Losses</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for member_id, member in members.items %}
-                    <tr>
-                      <td>{{ member.war_hits }}</td>
-                      <td>{{ member.outside_chain_hits }}</td>
-                      <td>{{ member.losses }}</td>
-                    </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
-              </th>
-              <th>
-                <table>
-                  <colgroup>
-                    <col class="col-grey"/>
-                    <col/>
-                    <col class="col-grey"/>
-                    <col/>
-                  </colgroup>
-                  <thead>
-                  <tr>
-                    <th>War Attack Score</th>
-                    <th>Chain Attack Score</th>
-                    <th>Score lost</th>
-                    <th>Score Sum</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for member_id, member in members.items %}
-                    <tr>
-                      <td>{{ member.score_war_attacks }}</td>
-                      <td>{{ member.score_chain_attacks }}</td>
-                      <td>{{ member.score_losses }}</td>
-                      <td>{{ member.score_sum }}</td>
-                    </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
-              </th>
-              <th>
-                <table>
-                  <colgroup>
-                    <col class="col-grey"/>
-                    <col/>
-                    <col class="col-grey"/>
-                    <col/>
-                  </colgroup>
-                  <thead>
-                  <tr>
-                    <th>War Attack Pay</th>
-                    <th>Chain Attack Pay</th>
-                    <th>Penalty For Losses</th>
-                    <th>Final Pay</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for member_id, member in members.items %}
-                    <tr>
-                      <td><span class="money">{{ member.war_attack_pay }}</span></td>
-                      <td><span class="money">{{ member.chain_attack_pay }}</span></td>
-                      <td><span class="money">{{ member.loss_penalty }}</span></td>
-                      <td><span class="money">{{ member.final_pay }}</span></td>
-                    </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
-              </th>
-            </tr>
+            {% for member_id, member in members.items %}
+              <tr>
+                <td>{{ member.name }}</td>
+                <td>{{ member.war_hits }}</td>
+                <td>{{ member.assists }}</td>
+                <td>{{ member.outside_chain_hits }}</td>
+                <td>{{ member.losses }}</td>
+                <td><span class="money">0</span></td>
+                <td><span class="money">0</span></td>
+                <td><span class="money">0</span></td>
+                <td><span class="money">0</span></td>
+                <td><span class="money">0</span></td>
+              </tr>
+            {% endfor %}
             </tbody>
           </table>
         </section>
@@ -169,7 +88,7 @@
                 <p><strong>Outside Chain Attacks:</strong></p>
                 <ul>
                   {% for attack_id, attack in chain.attacks.items %}
-                    <li>{{ attack.chain_length }} {{ attack.attacker_name }} attacked {{ attack.defender_name }}</li>
+                    <li>#{{ attack.chain_length }} {{ attack.attacker_name }} attacked {{ attack.defender_name }}</li>
                   {% endfor %}
                 </ul>
               </li>
@@ -189,6 +108,7 @@
             <section class="hide" id="{{ member.user_id }}">
               <div class="horizontal-content">
                 <text class="war-attack">War attack</text>
+                <text class="assist">Assist</text>
                 <text class="chain-attack">Chain attack</text>
                 <text class="loss-attack">Loss</text>
               </div>
@@ -198,12 +118,17 @@
                     {% if attack.attacker_war_result == "War" %}
                       <li class="war-attack">
                         <time datetime="{{ attack.timestamp_ended.1 }}">{{ attack.timestamp_ended.0 }}</time>
-                        {{ attack.attacker_name|default:"Someone" }} {{ attack.result }} {{ attack.defender_name }}
+                        {{ member.name }} {{ attack.result }} {{ attack.defender_name }}
+                      </li>
+                    {% elif attack.attacker_war_result == "Assist" %}
+                      <li class="assist">
+                        <time datetime="{{ attack.timestamp_ended.1 }}">{{ attack.timestamp_ended.0 }}</time>
+                        {{ member.name }} Assisted in attacking {{ attack.defender_name }}
                       </li>
                     {% elif attack.attacker_war_result == "Chain" %}
                       <li class="chain-attack">
                         <time datetime="{{ attack.timestamp_ended.1 }}">{{ attack.timestamp_ended.0 }}</time>
-                        {{ attack.attacker_name|default:"Someone" }} {{ attack.result }} {{ attack.defender_name }}
+                        {{ member.name }} {{ attack.result }} {{ attack.defender_name }}
                       </li>
                     {% else %}
                       <li class="regular-attack">
