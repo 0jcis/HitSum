@@ -17,4 +17,4 @@ RUN python manage.py collectstatic --noinput
 RUN python manage.py makemigrations
 RUN python manage.py migrate
 
-CMD ["sh", "-c", "hypercorn --config hypercorn_config.toml torn_website.asgi:application & celery -A torn_website worker --loglevel=info"]
+CMD ["sh", "-c", "hypercorn --config hypercorn_config.toml torn_website.asgi:application & celery -A torn_website worker -l INFO"]

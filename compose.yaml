@@ -10,6 +10,11 @@ services:
       - static_files:/app/static
     env_file:
       - .webserver_env
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
   proxy:
     image: torn_proxy
     build:

@@ -408,6 +408,67 @@ class InstanceData:
                 "war"
             ]["end"]
 
+        async def request_membership_data(session):
+            membership_data = dict()
+            retries = 0
+            last_membership_response = None
+            last_response_len = 100
+            params = {
+                "key": self.api_key,
+                "selections": "membershipnews",
+                "from": (
+                    self.faction.war_end
+                    if self.faction.war_end
+                    else self.faction.war_start
+                ),
+            }
+
+            while not last_response_len == 1:
+                async with session.get("/faction", params=params) as resp:
+                    resp.raise_for_status()
+                    resp_membership_data = await resp.json()
+
+                if "error" in resp_membership_data:
+                    if resp_membership_data["error"]["code"] == 5:
+                        sleep(60 - datetime.now().second)
+                        retries += 1
+                        raise RuntimeError("API overloaded.") if retries == 10 else None
+                    raise PermissionError(
+                        "API key invalid, no permissions or torn API down."
+                    )
+                else:
+                    if (
+                        last_membership_response
+                        == resp_membership_data["membershipnews"]
+                    ):
+                        last_response_len = 1
+                    else:
+                        last_response_len = len(resp_membership_data["membershipnews"])
+                    last_membership_response = resp_membership_data["membershipnews"]
+
+                    if not last_membership_response:
+                        break
+
+                    membership_data.update(last_membership_response)
+
+                    params["from"] = max(
+                        int(membership["timestamp"])
+                        for membership in last_membership_response.values()
+                    )
+            for membership in membership_data.values():
+                leave_filter = ("left the faction", "was kicked out of the faction by")
+                if any(identifier in membership["news"] for identifier in leave_filter):
+                    split_1 = membership["news"].split(
+                        "<a href = http://www.torn.com/profiles.php?XID="
+                    )[1]
+                    split_2 = split_1.split(">")
+                    user_id = int(split_2[0])
+                    name = split_2[1].split("</a")[0]
+
+                    self.faction.members.update(
+                        {user_id: InstanceData.MemberData(user_id=user_id, name=name)}
+                    )
+
         async def request_attack_data(session):
             # Delete stored old attacks if new war started.
             attacks_before_war = dict(
@@ -664,8 +725,25 @@ class InstanceData:
 
                     attack.attacker_war_result = "War"
 
+        def remove_empty_members():
+            empty_members = list()
+            for user_id, member in self.faction.members.items():
+                if all(
+                    (
+                        member.war_hits == 0,
+                        member.assists == 0,
+                        member.outside_chain_hits == 0,
+                        member.losses == 0,
+                    )
+                ):
+                    empty_members.append(user_id)
+            for user_id in empty_members:
+                self.faction.members.pop(user_id)
+
         async def update_to_db():
             faction_object, faction_object_created = await self.faction.update_to_db()
+            for attack_data in self.faction.attacks.values():
+                await attack_data.update_to_db(faction_object=faction_object)
 
             for chain_data in self.faction.chains.values():
                 chain_object, chain_object_created = await chain_data.update_to_db(
@@ -696,6 +774,7 @@ class InstanceData:
         async with ClientSession("https://api.torn.com") as client_session:
             await request_basic_data(client_session)
             await request_war_data(client_session)
+            await request_membership_data(client_session)
             await request_attack_data(client_session)
             await request_chain_data(client_session)
 
@@ -704,6 +783,7 @@ class InstanceData:
         count_assists()
         count_chain_attacks()
         count_losses()
+        remove_empty_members()
 
         from .tasks import update_to_db_in_background
 

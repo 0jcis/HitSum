@@ -34,3 +34,5 @@ async def home(request):
             return HttpResponseRedirect(f"/tracking/?id={instance_data.link_id}")
         else:
             return HttpResponseRedirect(f"/tracking/?id={instance_data.link_id}")
+    else:
+        return HttpResponseBadRequest()
